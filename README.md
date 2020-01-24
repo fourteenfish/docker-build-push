@@ -1,5 +1,5 @@
 # Docker Build & Push Action
-<p><a href="https://github.com/mr-smithers-excellent/docker-build-push"><img alt="GitHub Actions status" src="https://github.com/mr-smithers-excellent/docker-build-push/workflows/Tests/badge.svg"></a></p>
+<p><a href="https://github.com/fourteenfish/docker-build-push"><img alt="GitHub Actions status" src="https://github.com/fourteenfish/docker-build-push/workflows/Tests/badge.svg"></a></p>
 
 Builds a Docker image and pushes it to the private registry of your choosing.
 
@@ -11,7 +11,7 @@ Builds a Docker image and pushes it to the private registry of your choosing.
 steps:
   - uses: actions/checkout@v1.0
 
-  - uses: mr-smithers-excellent/docker-build-push@v2
+  - uses: fourteenfish/docker-build-push@v2
     with:
       image: repo/image
       tag: latest
@@ -38,10 +38,10 @@ steps:
 ### Docker Hub
 
 * Save your Docker Hub username (`DOCKER_USERNAME`) and password (`DOCKER_PASSWORD`) as secrets in your GitHub repo
-* Modify sample below and include in your workflow `.github/workflows/*.yml` file 
+* Modify sample below and include in your workflow `.github/workflows/*.yml` file
 
 ```yaml
-uses: mr-smithers-excellent/docker-build-push@v2
+uses: fourteenfish/docker-build-push@v2
 with:
   image: docker-hub-repo/image-name
   registry: docker.io
@@ -54,16 +54,16 @@ with:
 * Create a service account with the ability to push to GCR (see [configuring access control](https://cloud.google.com/container-registry/docs/access-control))
 * Create and download JSON key for new service account
 * Save content of `.json` file as a secret called `DOCKER_PASSWORD` in your GitHub repo
-* Modify sample below and include in your workflow `.github/workflows/*.yml` file 
+* Modify sample below and include in your workflow `.github/workflows/*.yml` file
 * Ensure you set the username to `_json_key`
 
 ```yaml
-uses: mr-smithers-excellent/docker-build-push@v2
+uses: fourteenfish/docker-build-push@v2
 with:
   image: gcp-project/image-name
   registry: gcr.io
-  username: _json_key 
-  password: ${{ secrets.DOCKER_PASSWORD }} 
+  username: _json_key
+  password: ${{ secrets.DOCKER_PASSWORD }}
 ```
 
 ### AWS Elastic Container Registry (ECR)
@@ -74,7 +74,7 @@ with:
 * Modify sample below and include in your workflow `.github/workflows/*.yml` file
 
 ```yaml
-uses: mr-smithers-excellent/docker-build-push@v2
+uses: fourteenfish/docker-build-push@v2
 with:
   image: image-name
   registry: [aws-account-number].dkr.ecr.[region].amazonaws.com
@@ -90,5 +90,5 @@ By default, if you do not pass a `tag` input this action will use an algorithm b
 | Trigger                  | Commit SHA | Docker Tag           |
 |--------------------------|------------|----------------------|
 | /refs/tags/v1.0          | N/A        | v1.0                 |
-| /refs/heads/master       | 1234567    | dev-1234567          |
-| /refs/heads/SOME-feature | 1234567    | some-feature-1234567 | 
+| /refs/heads/master       | 1234567    | master-1234567          |
+| /refs/heads/SOME-feature | 1234567    | some-feature-1234567 |

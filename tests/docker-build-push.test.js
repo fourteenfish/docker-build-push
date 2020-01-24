@@ -25,7 +25,7 @@ describe('Create & push Docker image', () => {
   test('Valid Docker inputs', () => {
     const image = 'gcp-project/image';
     const registry = 'gcr.io';
-    const tag = 'dev-1234567';
+    const tag = 'master-1234567';
     const buildArgs = '';
     const dockerfile = 'Dockerfile';
 
