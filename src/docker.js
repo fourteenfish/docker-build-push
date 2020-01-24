@@ -31,8 +31,8 @@ const createTag = () => {
     // If GitHub tag exists, use it as the Docker tag
     dockerTag = ref.replace('refs/tags/', '');
   } else if (isMasterBranch(ref)) {
-    // If we're on the master branch, use dev-{GIT_SHORT_SHA} as the Docker tag
-    dockerTag = `dev-${shortSha}`;
+    // If we're on the master branch, use master-{GIT_SHORT_SHA} as the Docker tag
+    dockerTag = `master-${shortSha}`;
   } else if (isNotMasterBranch(ref)) {
     // If we're on a non-master branch, use branch-prefix-{GIT_SHORT_SHA) as the Docker tag
     // refs/heads/jira-123/feature/something
