@@ -25,6 +25,7 @@ const run = () => {
     docker.build(imageName, buildArgs);
     docker.push(imageName);
 
+    core.setOutput('imageName', `${image}:${tag}`);
     core.setOutput('imageFullName', imageName);
   } catch (error) {
     core.setFailed(error.message);
