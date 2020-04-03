@@ -11,13 +11,14 @@ beforeAll(() => {
   docker.push = jest.fn();
 });
 
-const mockInputs = (image, registry, tag, buildArgs, dockerfile) => {
+const mockInputs = (image, registry, tag, buildArgs, target, dockerfile) => {
   core.getInput = jest
     .fn()
     .mockReturnValueOnce(image)
     .mockReturnValueOnce(registry)
     .mockReturnValueOnce(tag)
     .mockReturnValueOnce(buildArgs)
+    .mockReturnValueOnce(target)
     .mockReturnValueOnce(dockerfile);
 };
 
@@ -31,17 +32,18 @@ describe('Create & push Docker image', () => {
 
     docker.login = jest.fn();
     docker.createTag = jest.fn().mockReturnValueOnce(tag);
-    mockInputs(image, registry, null, buildArgs, dockerfile);
+    mockInputs(image, registry, null, buildArgs, false, dockerfile);
     core.setOutput = jest.fn().mockReturnValueOnce('imageFullName', `${registry}/${image}:${tag}`);
     cp.execSync = jest.fn();
 
     run();
 
     expect(docker.createTag).toHaveBeenCalledTimes(1);
-    expect(core.getInput).toHaveBeenCalledTimes(5);
+    expect(core.getInput).toHaveBeenCalledTimes(6);
     expect(core.setOutput).toHaveBeenCalledWith('imageFullName', `${registry}/${image}:${tag}`);
     expect(cp.execSync).toHaveBeenCalledWith(`docker build -f ${dockerfile} -t ${registry}/${image}:${tag} .`, {
-      maxBuffer: maxBufferSize
+      maxBuffer: maxBufferSize,
+      stdio: 'inherit'
     });
   });
 });
@@ -56,19 +58,20 @@ describe('Create & push Docker image with build args', () => {
 
     docker.login = jest.fn();
     docker.createTag = jest.fn().mockReturnValueOnce(tag);
-    mockInputs(image, registry, null, buildArgs, dockerfile);
+    mockInputs(image, registry, null, buildArgs, false, dockerfile);
     core.setOutput = jest.fn().mockReturnValueOnce('imageFullName', `${registry}/${image}:${tag}`);
     cp.execSync = jest.fn();
 
     run();
 
     expect(docker.createTag).toHaveBeenCalledTimes(1);
-    expect(core.getInput).toHaveBeenCalledTimes(5);
+    expect(core.getInput).toHaveBeenCalledTimes(6);
     expect(core.setOutput).toHaveBeenCalledWith('imageFullName', `${registry}/${image}:${tag}`);
     expect(cp.execSync).toHaveBeenCalledWith(
       `docker build -f ${dockerfile} -t ${registry}/${image}:${tag} --build-arg VERSION=1.1.1 --build-arg BUILD_DATE=2020-01-14 .`,
       {
-        maxBuffer: maxBufferSize
+        maxBuffer: maxBufferSize,
+        stdio: 'inherit'
       }
     );
   });

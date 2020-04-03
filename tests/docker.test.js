@@ -90,7 +90,7 @@ describe('core and cp methods', () => {
       core.getInput.mockReturnValue(dockerfile);
       fs.existsSync.mockReturnValueOnce(false);
 
-      docker.build('gcr.io/some-project/image:v1');
+      docker.build('gcr.io/some-project/image:v1', false);
       expect(fs.existsSync).toHaveBeenCalledWith(dockerfile);
       expect(core.setFailed).toHaveBeenCalledWith(`Dockerfile does not exist in location ${dockerfile}`);
     });
@@ -100,10 +100,11 @@ describe('core and cp methods', () => {
       fs.existsSync.mockReturnValueOnce(true);
       const image = 'gcr.io/some-project/image:v1';
 
-      docker.build(image);
+      docker.build(image, false);
       expect(fs.existsSync).toHaveBeenCalledWith('Dockerfile');
       expect(cp.execSync).toHaveBeenCalledWith(`docker build -f Dockerfile -t ${image} .`, {
-        maxBuffer: maxBufferSize
+        maxBuffer: maxBufferSize,
+        stdio: 'inherit'
       });
     });
 
@@ -113,12 +114,13 @@ describe('core and cp methods', () => {
       const image = 'docker.io/this-project/that-image:latest';
       const buildArgs = ['VERSION=latest', 'BUILD_DATE=2020-01-14'];
 
-      docker.build(image, buildArgs);
+      docker.build(image, false, buildArgs);
       expect(fs.existsSync).toHaveBeenCalledWith('Dockerfile');
       expect(cp.execSync).toHaveBeenCalledWith(
         `docker build -f Dockerfile -t ${image} --build-arg VERSION=latest --build-arg BUILD_DATE=2020-01-14 .`,
         {
-          maxBuffer: maxBufferSize
+          maxBuffer: maxBufferSize,
+          stdio: 'inherit'
         }
       );
     });
