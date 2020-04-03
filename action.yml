@@ -18,6 +18,9 @@ inputs:
   buildArgs:
     description: 'Docker build arguments in format KEY=VALUE,KEY=VALUE'
     required: false
+  target:
+    description: 'Docker build target'
+    required: false
   username:
     description: 'Docker registry username'
     required: false

@@ -10,11 +10,14 @@ const isMasterBranch = ref => ref && ref === 'refs/heads/master';
 
 const isNotMasterBranch = ref => ref && ref.includes('refs/heads/') && ref !== 'refs/heads/master';
 
-const createBuildCommand = (dockerfile, imageName, buildArgs) => {
+const createBuildCommand = (dockerfile, imageName, target, buildArgs) => {
   let buildCommandPrefix = `docker build -f ${dockerfile} -t ${imageName}`;
   if (buildArgs) {
     const argsSuffix = buildArgs.map(arg => `--build-arg ${arg}`).join(' ');
     buildCommandPrefix = `${buildCommandPrefix} ${argsSuffix}`;
+  }
+  if (target) {
+    buildCommandPrefix = `${buildCommandPrefix} --target=${target}`;
   }
 
   return `${buildCommandPrefix} .`;
@@ -49,17 +52,18 @@ const createTag = () => {
   return dockerTag;
 };
 
-const build = (imageName, buildArgs) => {
+const build = (imageName, target, buildArgs) => {
   const dockerfile = core.getInput('dockerfile');
 
   if (!fs.existsSync(dockerfile)) {
     core.setFailed(`Dockerfile does not exist in location ${dockerfile}`);
   }
 
-  cp.execSync('docker image ls', { stdio: 'inherit' });
-
   core.info(`Building Docker image: ${imageName}`);
-  cp.execSync(createBuildCommand(dockerfile, imageName, buildArgs), { maxBuffer: maxBufferSize, stdio: 'inherit' });
+  cp.execSync(createBuildCommand(dockerfile, imageName, target, buildArgs), {
+    maxBuffer: maxBufferSize,
+    stdio: 'inherit'
+  });
 };
 
 const isEcr = registry => registry && registry.includes('amazonaws');
