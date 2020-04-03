@@ -56,6 +56,8 @@ const build = (imageName, buildArgs) => {
     core.setFailed(`Dockerfile does not exist in location ${dockerfile}`);
   }
 
+  cp.execSync('docker image ls', { stdio: 'inherit' });
+
   core.info(`Building Docker image: ${imageName}`);
   cp.execSync(createBuildCommand(dockerfile, imageName, buildArgs), { maxBuffer: maxBufferSize, stdio: 'inherit' });
 };
