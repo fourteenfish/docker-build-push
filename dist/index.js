@@ -534,6 +534,8 @@ const maxBufferSize = __webpack_require__(535);
 
 const isGitHubTag = ref => ref && ref.includes('refs/tags/');
 
+const isReleaseTag = ref => ref && ref.includes('refs/tags/release/');
+
 const isMasterBranch = ref => ref && ref === 'refs/heads/master';
 
 const isNotMasterBranch = ref => ref && ref.includes('refs/heads/') && ref !== 'refs/heads/master';
@@ -559,8 +561,13 @@ const createTag = () => {
   let dockerTag;
 
   if (isGitHubTag(ref)) {
-    // If GitHub tag exists, use it as the Docker tag
-    dockerTag = ref.replace('refs/tags/', '');
+    // If this is a 'release' tag
+    if (isReleaseTag(ref)) {
+      dockerTag = ref.replace(/refs\/tags\/release\/.*[^-]-/gi, '');
+    } else {
+      // If GitHub tag exists, use it as the Docker tag
+      dockerTag = ref.replace('refs/tags/', '');
+    }
   } else if (isMasterBranch(ref)) {
     // If we're on the master branch, use master-{GIT_SHORT_SHA} as the Docker tag
     dockerTag = `master-${shortSha}`;

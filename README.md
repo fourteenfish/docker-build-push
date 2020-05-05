@@ -87,8 +87,20 @@ env:
 
 By default, if you do not pass a `tag` input this action will use an algorithm based on the state of your git repo to determine the Docker image tag. This is designed to enable developers to more easily use [GitOps](https://www.weave.works/technologies/gitops/) in their CI/CD pipelines. Below is a table detailing how the GitHub trigger (branch or tag) determines the Docker tag.
 
-| Trigger                  | Commit SHA | Docker Tag           |
-|--------------------------|------------|----------------------|
-| /refs/tags/v1.0          | N/A        | v1.0                 |
-| /refs/heads/master       | 1234567    | master-1234567          |
-| /refs/heads/SOME-feature | 1234567    | some-feature-1234567 |
+|             Trigger             | Commit SHA |      Docker Tag      |                         Notes                          |
+|---------------------------------|------------|----------------------|--------------------------------------------------------|
+| /refs/tags/v1.0                 | N/A        | v1.0                 | Can be any tag                                         |
+| /refs/tags/release/myapp-v1.0.0 | N/A        | v1.0.0               | Everything after first dash used for docker tag |
+| /refs/heads/master              | 1234567    | master-1234567       |                                                        |
+| /refs/heads/SOME-feature        | 1234567    | some-feature-1234567 |                                                        |
+
+Tags prepended with 'relsease', such as `release/myapp-v1.0.0`, will return a Docker tag of just the part after the last dash, eg. v1.0.0. This can be useful when you have a 'mono-repository' containing multiple apps, but want to trigger github actions for specific apps. So, a github action for 'myapp' can be set up to trigger only on tags that filter for that app:
+
+```yaml
+on:
+  push:
+    tags:
+      - 'release/myapp-v*.*.*'
+```
+
+This will tag the Docker image with only the semver part of the tag `v1.0.0`.

@@ -22,6 +22,20 @@ describe('Create Docker image tag from git ref', () => {
     expect(docker.createTag()).toBe('v1.0');
   });
 
+  test('Create from tag push with release and appname', () => {
+    context.ref = 'refs/tags/release/myapp-v1.0.0';
+    context.sha = '60336540c3df28b52b1e364a65ff5b8f6ec135b8';
+
+    expect(docker.createTag()).toBe('v1.0.0');
+  });
+
+  test('Create from tag push with release and appname with multiple dashes', () => {
+    context.ref = 'refs/tags/release/my-app-v1.0.1';
+    context.sha = '60336540c3df28b52b1e364a65ff5b8f6ec135b8';
+
+    expect(docker.createTag()).toBe('v1.0.1');
+  });
+
   test('Create from master branch push', () => {
     context.ref = 'refs/heads/master';
     context.sha = '79d9bbba94cdbe372703f184e82c102107c71264';
