@@ -86,7 +86,9 @@ const login = () => {
   if (isEcr(registry)) {
     const region = getRegion(registry);
     core.info(`Logging into ECR region ${region}...`);
-    cp.execSync(`$(aws ecr get-login --region ${region} --no-include-email)`);
+    cp.execSync(
+      `aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${registry}`
+    );
   } else if (username && password) {
     core.info(`Logging into Docker registry ${registry}...`);
     cp.execSync(`docker login -u ${username} --password-stdin ${registry}`, {

@@ -1,4 +1,5 @@
 # Docker Build & Push Action
+
 <p><a href="https://github.com/fourteenfish/docker-build-push"><img alt="GitHub Actions status" src="https://github.com/fourteenfish/docker-build-push/workflows/Tests/badge.svg"></a></p>
 
 Builds a Docker image and pushes it to the private registry of your choosing.
@@ -94,7 +95,7 @@ By default, if you do not pass a `tag` input this action will use an algorithm b
 | /refs/heads/master              | 1234567    | master-1234567       |                                                        |
 | /refs/heads/SOME-feature        | 1234567    | some-feature-1234567 |                                                        |
 
-Tags prepended with 'relsease', such as `release/myapp-v1.0.0`, will return a Docker tag of just the part after the last dash, eg. v1.0.0. This can be useful when you have a 'mono-repository' containing multiple apps, but want to trigger github actions for specific apps. So, a github action for 'myapp' can be set up to trigger only on tags that filter for that app:
+Tags prepended with 'release', such as `release/myapp-v1.0.0`, will return a Docker tag of just the part after the last dash, eg. v1.0.0. This can be useful when you have a 'mono-repository' containing multiple apps, but want to trigger github actions for specific apps. So, a github action for 'myapp' can be set up to trigger only on tags that filter for that app:
 
 ```yaml
 on:

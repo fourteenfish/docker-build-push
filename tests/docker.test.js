@@ -168,7 +168,9 @@ describe('core and cp methods', () => {
 
       docker.login();
 
-      expect(cp.execSync).toHaveBeenCalledWith(`$(aws ecr get-login --region us-east-1 --no-include-email)`);
+      expect(cp.execSync).toHaveBeenCalledWith(
+        `aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${registry}`
+      );
     });
 
     test("returns undefined if empty login and doesn't execute command", () => {
