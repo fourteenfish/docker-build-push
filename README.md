@@ -24,15 +24,16 @@ steps:
 
 ## Inputs
 
-| Name       | Description                                                                             | Required |
-|------------|-----------------------------------------------------------------------------------------|----------|
-| image      | Docker image name                                                                       | Yes      |
-| tag        | Docker image tag (see [Tagging the image with GitOps](#tagging-the-image-using-gitops)) | No       |
-| registry   | Docker registry host                                                                    | Yes      |
-| dockerfile | Location of Dockerfile (defaults to `Dockerfile`)                                       | No       |
-| buildArgs  | Docker build arguments in format `KEY=VALUE,KEY=VALUE`                                  | No       |
-| username   | Docker registry username                                                                | No       |
-| password   | Docker registry password or token                                                       | No       |
+|        Name        |                                       Description                                       | Required |
+|--------------------|-----------------------------------------------------------------------------------------|----------|
+| image              | Docker image name                                                                       | Yes      |
+| tag                | Docker image tag (see [Tagging the image with GitOps](#tagging-the-image-using-gitops)) | No       |
+| registry           | Docker registry host                                                                    | Yes      |
+| dockerfile         | Location of Dockerfile (defaults to `Dockerfile`)                                       | No       |
+| buildArgs          | Docker build arguments in format `KEY=VALUE,KEY=VALUE`                                  | No       |
+| username           | Docker registry username                                                                | No       |
+| password           | Docker registry password or token                                                       | No       |
+| useBranchTimestamp | A boolean to determine whether to add a timestamp to branch-based tags                  | No       |
 
 ## Examples
 
@@ -105,3 +106,5 @@ on:
 ```
 
 This will tag the Docker image with only the semver part of the tag `v1.0.0`.
+
+If `useBranchTimestamp` option is `true`, add a timestamp (ms) to branch-based image tags. Github tag-based tags are unaffected.

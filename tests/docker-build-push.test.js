@@ -11,11 +11,20 @@ beforeAll(() => {
   docker.push = jest.fn();
 });
 
-const mockInputs = (image, registry, tag, buildArgs, target, dockerfile) => {
+const mockInputs = (
+  image,
+  registry,
+  useBranchTimestamp,
+  tag,
+  buildArgs,
+  target,
+  dockerfile,
+) => {
   core.getInput = jest
     .fn()
     .mockReturnValueOnce(image)
     .mockReturnValueOnce(registry)
+    .mockReturnValueOnce(useBranchTimestamp)
     .mockReturnValueOnce(tag)
     .mockReturnValueOnce(buildArgs)
     .mockReturnValueOnce(target)
@@ -29,10 +38,19 @@ describe('Create & push Docker image', () => {
     const tag = 'master-1234567';
     const buildArgs = '';
     const dockerfile = 'Dockerfile';
+    const useBranchTimestamp = false;
 
     docker.login = jest.fn();
     docker.createTag = jest.fn().mockReturnValueOnce(tag);
-    mockInputs(image, registry, null, buildArgs, false, dockerfile);
+    mockInputs(
+      image,
+      registry,
+      useBranchTimestamp,
+      null,
+      buildArgs,
+      false,
+      dockerfile,
+    );
     core.setOutput = jest
       .fn()
       .mockReturnValueOnce('imageFullName', `${registry}/${image}:${tag}`);
@@ -41,7 +59,7 @@ describe('Create & push Docker image', () => {
     run();
 
     expect(docker.createTag).toHaveBeenCalledTimes(1);
-    expect(core.getInput).toHaveBeenCalledTimes(6);
+    expect(core.getInput).toHaveBeenCalledTimes(7);
     expect(core.setOutput).toHaveBeenCalledWith(
       'imageFullName',
       `${registry}/${image}:${tag}`,
@@ -63,10 +81,19 @@ describe('Create & push Docker image with build args', () => {
     const tag = 'latest';
     const buildArgs = 'VERSION=1.1.1,BUILD_DATE=2020-01-14';
     const dockerfile = 'Dockerfile.custom';
+    const useBranchTimestamp = false;
 
     docker.login = jest.fn();
     docker.createTag = jest.fn().mockReturnValueOnce(tag);
-    mockInputs(image, registry, null, buildArgs, false, dockerfile);
+    mockInputs(
+      image,
+      registry,
+      useBranchTimestamp,
+      null,
+      buildArgs,
+      false,
+      dockerfile,
+    );
     core.setOutput = jest
       .fn()
       .mockReturnValueOnce('imageFullName', `${registry}/${image}:${tag}`);
@@ -75,7 +102,7 @@ describe('Create & push Docker image with build args', () => {
     run();
 
     expect(docker.createTag).toHaveBeenCalledTimes(1);
-    expect(core.getInput).toHaveBeenCalledTimes(6);
+    expect(core.getInput).toHaveBeenCalledTimes(7);
     expect(core.setOutput).toHaveBeenCalledWith(
       'imageFullName',
       `${registry}/${image}:${tag}`,

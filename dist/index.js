@@ -536,10 +536,7 @@ const isGitHubTag = ref => ref && ref.includes('refs/tags/');
 
 const isReleaseTag = ref => ref && ref.includes('refs/tags/release/');
 
-const isMasterBranch = ref => ref && ref === 'refs/heads/master';
-
-const isNotMasterBranch = ref =>
-  ref && ref.includes('refs/heads/') && ref !== 'refs/heads/master';
+const isBranch = ref => ref && ref.includes('refs/heads/');
 
 const createBuildCommand = (dockerfile, imageName, target, buildArgs) => {
   let buildCommandPrefix = `docker build -f ${dockerfile} -t ${imageName}`;
@@ -554,7 +551,7 @@ const createBuildCommand = (dockerfile, imageName, target, buildArgs) => {
   return `${buildCommandPrefix} .`;
 };
 
-const createTag = () => {
+const createTag = useBranchTimestamp => {
   core.info('Creating Docker image tag...');
   const { sha } = context;
   const ref = context.ref.toLowerCase();
@@ -569,17 +566,18 @@ const createTag = () => {
       // If GitHub tag exists, use it as the Docker tag
       dockerTag = ref.replace('refs/tags/', '');
     }
-  } else if (isMasterBranch(ref)) {
-    // If we're on the master branch, use master-{GIT_SHORT_SHA} as the Docker tag
-    dockerTag = `master-${shortSha}`;
-  } else if (isNotMasterBranch(ref)) {
-    // If we're on a non-master branch, use branch-prefix-{GIT_SHORT_SHA) as the Docker tag
+  } else if (isBranch(ref)) {
+    // If we're not building a tag, use branch-prefix-{GIT_SHORT_SHA) as the Docker tag
     // refs/heads/jira-123/feature/something
     const branchName = ref.replace('refs/heads/', '');
-    const branchPrefix = branchName.includes('/')
-      ? branchName.substring(0, branchName.indexOf('/'))
-      : branchName;
-    dockerTag = `${branchPrefix}-${shortSha}`;
+    const safeBranchName = branchName
+      .replace(/[^\w.-]+/g, '-')
+      .replace(/^[^\w]+/, '')
+      .substring(0, 120);
+    dockerTag = `${safeBranchName}-${shortSha}`;
+    if (useBranchTimestamp) {
+      dockerTag = `${dockerTag}-${Date.now()}`;
+    }
   } else {
     core.setFailed(
       'Unsupported GitHub event - only supports push https://help.github.com/en/articles/events-that-trigger-workflows#push-event-push',
@@ -1618,7 +1616,8 @@ const run = () => {
     // Get GitHub Action inputs
     const image = core.getInput('image', { required: true });
     const registry = core.getInput('registry', { required: true });
-    const tag = core.getInput('tag') || docker.createTag();
+    const useBranchTimestamp = core.getInput('useBranchTimestamp') || false;
+    const tag = core.getInput('tag') || docker.createTag(useBranchTimestamp);
     const buildArgs = processBuildArgsInput(core.getInput('buildArgs'));
     const target = core.getInput('target') || false;
 

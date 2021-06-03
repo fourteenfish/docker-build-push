@@ -16,7 +16,8 @@ const run = () => {
     // Get GitHub Action inputs
     const image = core.getInput('image', { required: true });
     const registry = core.getInput('registry', { required: true });
-    const tag = core.getInput('tag') || docker.createTag();
+    const useBranchTimestamp = core.getInput('useBranchTimestamp') || false;
+    const tag = core.getInput('tag') || docker.createTag(useBranchTimestamp);
     const buildArgs = processBuildArgsInput(core.getInput('buildArgs'));
     const target = core.getInput('target') || false;
 
