@@ -8,6 +8,9 @@ inputs:
   tag:
     description: 'Tag override for Docker image'
     required: false
+  useBranchTimestamp: 'Use timestamp suffix for branch-based tags'
+    required: false
+    default: false
   registry:
     description: 'Target Docker registry'
     required: true
