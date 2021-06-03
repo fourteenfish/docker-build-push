@@ -10,7 +10,8 @@ const isReleaseTag = ref => ref && ref.includes('refs/tags/release/');
 
 const isMasterBranch = ref => ref && ref === 'refs/heads/master';
 
-const isNotMasterBranch = ref => ref && ref.includes('refs/heads/') && ref !== 'refs/heads/master';
+const isNotMasterBranch = ref =>
+  ref && ref.includes('refs/heads/') && ref !== 'refs/heads/master';
 
 const createBuildCommand = (dockerfile, imageName, target, buildArgs) => {
   let buildCommandPrefix = `docker build -f ${dockerfile} -t ${imageName}`;
@@ -47,11 +48,13 @@ const createTag = () => {
     // If we're on a non-master branch, use branch-prefix-{GIT_SHORT_SHA) as the Docker tag
     // refs/heads/jira-123/feature/something
     const branchName = ref.replace('refs/heads/', '');
-    const branchPrefix = branchName.includes('/') ? branchName.substring(0, branchName.indexOf('/')) : branchName;
+    const branchPrefix = branchName.includes('/')
+      ? branchName.substring(0, branchName.indexOf('/'))
+      : branchName;
     dockerTag = `${branchPrefix}-${shortSha}`;
   } else {
     core.setFailed(
-      'Unsupported GitHub event - only supports push https://help.github.com/en/articles/events-that-trigger-workflows#push-event-push'
+      'Unsupported GitHub event - only supports push https://help.github.com/en/articles/events-that-trigger-workflows#push-event-push',
     );
   }
 
@@ -69,13 +72,17 @@ const build = (imageName, target, buildArgs) => {
   core.info(`Building Docker image: ${imageName}`);
   cp.execSync(createBuildCommand(dockerfile, imageName, target, buildArgs), {
     maxBuffer: maxBufferSize,
-    stdio: 'inherit'
+    stdio: 'inherit',
   });
 };
 
 const isEcr = registry => registry && registry.includes('amazonaws');
 
-const getRegion = registry => registry.substring(registry.indexOf('ecr.') + 4, registry.indexOf('.amazonaws'));
+const getRegion = registry =>
+  registry.substring(
+    registry.indexOf('ecr.') + 4,
+    registry.indexOf('.amazonaws'),
+  );
 
 const login = () => {
   const registry = core.getInput('registry', { required: true });
@@ -87,12 +94,12 @@ const login = () => {
     const region = getRegion(registry);
     core.info(`Logging into ECR region ${region}...`);
     cp.execSync(
-      `aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${registry}`
+      `aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${registry}`,
     );
   } else if (username && password) {
     core.info(`Logging into Docker registry ${registry}...`);
     cp.execSync(`docker login -u ${username} --password-stdin ${registry}`, {
-      input: password
+      input: password,
     });
   }
 };
@@ -106,5 +113,5 @@ module.exports = {
   createTag,
   build,
   login,
-  push
+  push,
 };

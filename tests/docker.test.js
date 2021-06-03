@@ -73,7 +73,7 @@ describe('Create Docker image tag from git ref', () => {
 
     expect(tag).toBeUndefined();
     expect(core.setFailed).toHaveBeenCalledWith(
-      'Unsupported GitHub event - only supports push https://help.github.com/en/articles/events-that-trigger-workflows#push-event-push'
+      'Unsupported GitHub event - only supports push https://help.github.com/en/articles/events-that-trigger-workflows#push-event-push',
     );
   });
 });
@@ -106,7 +106,9 @@ describe('core and cp methods', () => {
 
       docker.build('gcr.io/some-project/image:v1', false);
       expect(fs.existsSync).toHaveBeenCalledWith(dockerfile);
-      expect(core.setFailed).toHaveBeenCalledWith(`Dockerfile does not exist in location ${dockerfile}`);
+      expect(core.setFailed).toHaveBeenCalledWith(
+        `Dockerfile does not exist in location ${dockerfile}`,
+      );
     });
 
     test('Dockerfile exists', () => {
@@ -116,10 +118,13 @@ describe('core and cp methods', () => {
 
       docker.build(image, false);
       expect(fs.existsSync).toHaveBeenCalledWith('Dockerfile');
-      expect(cp.execSync).toHaveBeenCalledWith(`docker build -f Dockerfile -t ${image} .`, {
-        maxBuffer: maxBufferSize,
-        stdio: 'inherit'
-      });
+      expect(cp.execSync).toHaveBeenCalledWith(
+        `docker build -f Dockerfile -t ${image} .`,
+        {
+          maxBuffer: maxBufferSize,
+          stdio: 'inherit',
+        },
+      );
     });
 
     test('Build with build args', () => {
@@ -134,8 +139,8 @@ describe('core and cp methods', () => {
         `docker build -f Dockerfile -t ${image} --build-arg VERSION=latest --build-arg BUILD_DATE=2020-01-14 .`,
         {
           maxBuffer: maxBufferSize,
-          stdio: 'inherit'
-        }
+          stdio: 'inherit',
+        },
       );
     });
   });
@@ -153,9 +158,12 @@ describe('core and cp methods', () => {
 
       docker.login();
 
-      expect(cp.execSync).toHaveBeenCalledWith(`docker login -u ${username} --password-stdin ${registry}`, {
-        input: password
-      });
+      expect(cp.execSync).toHaveBeenCalledWith(
+        `docker login -u ${username} --password-stdin ${registry}`,
+        {
+          input: password,
+        },
+      );
     });
 
     test('ECR login', () => {
@@ -169,7 +177,7 @@ describe('core and cp methods', () => {
       docker.login();
 
       expect(cp.execSync).toHaveBeenCalledWith(
-        `aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${registry}`
+        `aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${registry}`,
       );
     });
 

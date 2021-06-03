@@ -33,18 +33,26 @@ describe('Create & push Docker image', () => {
     docker.login = jest.fn();
     docker.createTag = jest.fn().mockReturnValueOnce(tag);
     mockInputs(image, registry, null, buildArgs, false, dockerfile);
-    core.setOutput = jest.fn().mockReturnValueOnce('imageFullName', `${registry}/${image}:${tag}`);
+    core.setOutput = jest
+      .fn()
+      .mockReturnValueOnce('imageFullName', `${registry}/${image}:${tag}`);
     cp.execSync = jest.fn();
 
     run();
 
     expect(docker.createTag).toHaveBeenCalledTimes(1);
     expect(core.getInput).toHaveBeenCalledTimes(6);
-    expect(core.setOutput).toHaveBeenCalledWith('imageFullName', `${registry}/${image}:${tag}`);
-    expect(cp.execSync).toHaveBeenCalledWith(`docker build -f ${dockerfile} -t ${registry}/${image}:${tag} .`, {
-      maxBuffer: maxBufferSize,
-      stdio: 'inherit'
-    });
+    expect(core.setOutput).toHaveBeenCalledWith(
+      'imageFullName',
+      `${registry}/${image}:${tag}`,
+    );
+    expect(cp.execSync).toHaveBeenCalledWith(
+      `docker build -f ${dockerfile} -t ${registry}/${image}:${tag} .`,
+      {
+        maxBuffer: maxBufferSize,
+        stdio: 'inherit',
+      },
+    );
   });
 });
 
@@ -59,29 +67,35 @@ describe('Create & push Docker image with build args', () => {
     docker.login = jest.fn();
     docker.createTag = jest.fn().mockReturnValueOnce(tag);
     mockInputs(image, registry, null, buildArgs, false, dockerfile);
-    core.setOutput = jest.fn().mockReturnValueOnce('imageFullName', `${registry}/${image}:${tag}`);
+    core.setOutput = jest
+      .fn()
+      .mockReturnValueOnce('imageFullName', `${registry}/${image}:${tag}`);
     cp.execSync = jest.fn();
 
     run();
 
     expect(docker.createTag).toHaveBeenCalledTimes(1);
     expect(core.getInput).toHaveBeenCalledTimes(6);
-    expect(core.setOutput).toHaveBeenCalledWith('imageFullName', `${registry}/${image}:${tag}`);
+    expect(core.setOutput).toHaveBeenCalledWith(
+      'imageFullName',
+      `${registry}/${image}:${tag}`,
+    );
     expect(cp.execSync).toHaveBeenCalledWith(
       `docker build -f ${dockerfile} -t ${registry}/${image}:${tag} --build-arg VERSION=1.1.1 --build-arg BUILD_DATE=2020-01-14 .`,
       {
         maxBuffer: maxBufferSize,
-        stdio: 'inherit'
-      }
+        stdio: 'inherit',
+      },
     );
   });
 });
 
 describe('Create Docker image causing an error', () => {
   test('Docker login error', () => {
-    docker.createTag = jest.fn().mockRejectedValue('some-tag');
+    docker.createTag = jest.fn().mockReturnValueOnce('some-tag');
     docker.build = jest.fn();
-    const error = 'Error: Cannot perform an interactive login from a non TTY device';
+    const error =
+      'Error: Cannot perform an interactive login from a non TTY device';
     docker.login = jest.fn().mockImplementation(() => {
       throw new Error(error);
     });
