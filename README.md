@@ -1,3 +1,5 @@
+**This repos is archived. Please use [fourteenfish/actions/docker-build-and-push](https://github.com/fourteenfish/actions)**
+
 # Docker Build & Push Action
 
 <p><a href="https://github.com/fourteenfish/docker-build-push"><img alt="GitHub Actions status" src="https://github.com/fourteenfish/docker-build-push/workflows/Tests/badge.svg"></a></p>
